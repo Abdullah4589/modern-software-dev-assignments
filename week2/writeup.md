@@ -22,12 +22,18 @@ For each exercise, please include what prompts you used to generate the answer, 
 ### Exercise 1: Scaffold a New Feature
 Prompt: 
 ```
-TODO
+Help me implement an LLM-powered alternative named `extract_action_items_llm(input_text)` in `app/services/extract.py`. Use the local Ollama model `llama3.1:8b` to extract action items from free-form notes. Return a Python list of strings, request a JSON array format from Ollama, handle empty input, parse the model response, and return an empty list for invalid responses.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+`app/services/extract.py`, lines 91–124: added `extract_action_items_llm()`, including the Ollama call, JSON-array response format, response parsing, empty-input handling, and error handling.
+```
+
+Verification: Tested `extract_action_items_llm()` with the local `llama3.1:8b` model. It returned the expected list of action items:
+
+```python
+['Ali must fix the login page', 'Sara should email the report by Friday']
 ```
 
 ### Exercise 2: Add Unit Tests

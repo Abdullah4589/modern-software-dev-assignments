@@ -70,7 +70,8 @@ TOOL_REGISTRY: Dict[str, Callable[..., str]] = {
 # ==========================
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """You are a helpful assistant that can analyze Python code. When asked to call a tool, you should respond with a JSON object specifying the tool name and any required arguments. The only available tool is "output_every_func_return_type", which takes an optional argument "file_path" (a string) that specifies the path to a Python file. If "file_path" is not provided, it defaults to the current script's path.
+"""
 
 
 def resolve_path(p: str) -> str:

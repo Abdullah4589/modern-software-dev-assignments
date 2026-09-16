@@ -8,7 +8,7 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = "Now as a math expert I'm asking you to solve a math problem I want you to think step by step and then give the final answer like Answer:<number>."
 
 
 USER_PROMPT = """

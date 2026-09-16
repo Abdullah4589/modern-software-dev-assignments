@@ -37,7 +37,7 @@ QUESTION = (
 
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = "You are a senior software engineer. Write correct, efficient, and well-structured code. Use the provided context to answer the question. If the context is insufficient, say 'Insufficient context provided.'"
 
 
 # For this simple example
@@ -56,7 +56,7 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
-    return []
+    return [corpus[0]]  # Use the API docs for this task
 
 
 def make_user_prompt(question: str, context_docs: List[str]) -> str:
