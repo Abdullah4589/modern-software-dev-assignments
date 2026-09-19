@@ -1,19 +1,27 @@
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Dict, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from .db import init_db
+from .errors import register_exception_handlers
 from .routers import action_items, notes
-from . import db
 
-init_db()
 
-app = FastAPI(title="Action Item Extractor")
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
+    # Create tables when the server starts, not as a side effect of importing this module.
+    init_db()
+    yield
+
+
+app = FastAPI(title="Action Item Extractor", lifespan=lifespan)
+register_exception_handlers(app)
 
 
 @app.get("/", response_class=HTMLResponse)

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import os
-import re
-from typing import List
 import json
-from typing import Any
-from ollama import chat
+import re
+
 from dotenv import load_dotenv
+from ollama import chat
 
 load_dotenv()
 
@@ -31,9 +29,9 @@ def _is_action_line(line: str) -> bool:
     return False
 
 
-def extract_action_items(text: str) -> List[str]:
+def extract_action_items(text: str) -> list[str]:
     lines = text.splitlines()
-    extracted: List[str] = []
+    extracted: list[str] = []
     for raw_line in lines:
         line = raw_line.strip()
         if not line:
@@ -56,7 +54,7 @@ def extract_action_items(text: str) -> List[str]:
                 extracted.append(s)
     # Deduplicate while preserving order
     seen: set[str] = set()
-    unique: List[str] = []
+    unique: list[str] = []
     for item in extracted:
         lowered = item.lower()
         if lowered in seen:
@@ -88,41 +86,40 @@ def _looks_imperative(sentence: str) -> bool:
     }
     return first.lower() in imperative_starters
 
-def extract_action_items_llm(input_text: str) -> List[str]:
-      """Use Ollama to extract action items as a JSON list."""
-      if not input_text.strip():
-          return []
 
-      prompt = (
-          "Extract only the action items from these notes. "
-          "Return an array of short action-item strings. "
-          "If there are no action items, return an empty array.\n\n"
-          f"Notes:\n{input_text}"
-      )
+def extract_action_items_llm(input_text: str) -> list[str]:
+    """Use Ollama to extract action items as a JSON list."""
+    if not input_text.strip():
+        return []
 
-      try:
-          response = chat(
-              model="llama3.1:8b",
-              messages=[{"role": "user", "content": prompt}],
-              format={
-                  "type": "array",
-                  "items": {"type": "string"},
-              },
-              options={
-                  "temperature": 0.2,
-                  "num_predict": 500,
-              },
-          )
+    prompt = (
+        "Extract only the action items from these notes. "
+        "Return an array of short action-item strings. "
+        "If there are no action items, return an empty array.\n\n"
+        f"Notes:\n{input_text}"
+    )
 
-          content = response.message.content
-          action_items = json.loads(content)
+    try:
+        response = chat(
+            model="llama3.1:8b",
+            messages=[{"role": "user", "content": prompt}],
+            format={
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            options={
+                "temperature": 0.2,
+                "num_predict": 500,
+            },
+        )
 
-          if isinstance(action_items, list) and all(
-              isinstance(item, str) for item in action_items
-          ):
-              return action_items
+        content = response.message.content
+        action_items = json.loads(content)
 
-          return []
+        if isinstance(action_items, list) and all(isinstance(item, str) for item in action_items):
+            return action_items
 
-      except (json.JSONDecodeError, AttributeError, Exception):
-          return []
+        return []
+
+    except (json.JSONDecodeError, AttributeError, Exception):
+        return []
