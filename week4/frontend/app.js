@@ -10,7 +10,18 @@ async function loadNotes() {
   const notes = await fetchJSON('/notes/');
   for (const n of notes) {
     const li = document.createElement('li');
-    li.textContent = `${n.title}: ${n.content}`;
+    li.textContent = `${n.pinned ? '[pinned] ' : ''}${n.title}: ${n.content} `;
+    const btn = document.createElement('button');
+    btn.textContent = n.pinned ? 'Unpin' : 'Pin';
+    btn.onclick = async () => {
+      await fetchJSON(`/notes/${n.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pinned: !n.pinned }),
+      });
+      loadNotes();
+    };
+    li.appendChild(btn);
     list.appendChild(li);
   }
 }
@@ -40,10 +51,11 @@ window.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const title = document.getElementById('note-title').value;
     const content = document.getElementById('note-content').value;
+    const pinned = document.getElementById('note-pinned').checked;
     await fetchJSON('/notes/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, pinned }),
     });
     e.target.reset();
     loadNotes();
