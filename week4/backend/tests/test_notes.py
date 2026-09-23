@@ -1,5 +1,7 @@
 def test_create_and_list_notes(client):
+
     payload = {"title": "Test", "content": "Hello world"}
+
     r = client.post("/notes/", json=payload)
     assert r.status_code == 201, r.text
     data = r.json()
@@ -17,3 +19,37 @@ def test_create_and_list_notes(client):
     assert r.status_code == 200
     items = r.json()
     assert len(items) >= 1
+
+
+# Write a failing tests for the search endpoint that checks for a query that does not match any notes.
+def test_search_no_results(client):
+    r = client.get("/notes/search/", params={"q": "Nonexistent"})
+    assert r.status_code == 200
+    items = r.json()
+    assert len(items) == 0, "Expected no results for a query that does not match any notes"
+
+
+# Another failing test for the search endpoint that checks for a query that matches multiple notes.
+def test_search_multiple_results(client):
+    # Create multiple notes with the same content
+    payload1 = {"title": "Note 1", "content": "Common content"}
+    payload2 = {"title": "Note 2", "content": "Common content"}
+
+    client.post("/notes/", json=payload1)
+    client.post("/notes/", json=payload2)
+
+    r = client.get("/notes/search/", params={"q": "Common"})
+    assert r.status_code == 200
+    items = r.json()
+    assert len(items) >= 2, "Expected multiple results for a query that matches multiple notes"
+
+
+def test_delete_note(client):
+    r = client.post("/notes/", json={"title": "ToDelete", "content": "bye"})
+    note_id = r.json()["id"]
+
+    r = client.delete(f"/notes/{note_id}")
+    assert r.status_code in (200, 204)
+
+    r = client.get(f"/notes/{note_id}")
+    assert r.status_code == 404
